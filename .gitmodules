@@ -1,0 +1,3 @@
+[submodule "s3aws"]
+	path = s3aws
+	url = git@github.com:VedantPolshettiwar/s3aws.git
