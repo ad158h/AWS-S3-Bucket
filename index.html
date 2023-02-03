@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S3 Buckets</title>
+</head>
+<body onLoad="loadData()">
+    Hello this is node s3 app.
+    <div>
+        <input type="file" id="s3-file" onchange="saveFile(this)"/>
+        <form id="">
+            Filename:<br><input type="text" id="fileName">
+            <br>
+        </form>
+        <button onclick="deleteFile(this)">Delete File</button>
+        <button id="logout">Log Out</button>
+    </div>
+    <script>
+        function saveFile(event){
+            const xhr = new XMLHttpRequest();
+            let formData = new FormData();
+            const file = event.files[0];
+            formData.append('s3-file',file);
+            
+            xhr.onreadystatechange = (state) => {
+                console.log(xhr.responseText);
+            }
+
+            xhr.timeout = 4999;
+            xhr.open("POST","http://localhost:3000/upload-to-s3");
+            xhr.send(formData);
+        }
+
+        function deleteFile(event){
+            const xhr = new XMLHttpRequest();
+            let formData = new FormData();
+            var fileName = document.getElementById("fileName");
+            console.log(fileName);
+            formData.append('fileName',fileName);
+
+            xhr.onreadystatechange = (state) => {
+                console.log(xhr.responseText);
+            }
+
+            xhr.timeout = 4500;
+            xhr.open("POST","http://localhost:3000/delete-from-s3");
+            xhr.send(formData);
+        }
+
+        function loadData(){
+           getBucketObjectList();
+        }
+
+        function getBucketObjectList() {
+            getData('http://localhost:3000/list',(data)=>{
+                console.log(data);
+            });
+        }
+
+        function getData(url, cb) {
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = state => {
+            if(xhr.readyState === XMLHttpRequest.DONE) {
+                cb(xhr.responseText);
+            }
+        }
+        xhr.timeout = 1000;
+        xhr.open('GET', url);
+        xhr.send();
+        }
+
+        let logout = document.getElementById("logout");
+        logout.addEventListener("click", ()=>{
+            window.location.replace("./main.html");
+        })
+
+    </script>
+</body>
+</html>
